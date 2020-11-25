@@ -6,13 +6,49 @@
       <router-link :to="{name: 'WishList'}" class="innerLink"> 나중에 볼 영화</router-link> 
     </div>
     <h2>내가 본 영화</h2>
-      <!-- 본 영화만 보여주기 completed===true -->
+      <div class="container">
+        <div class="row">
+          <div class="hello row row-cols-1 row-cols-md-3">
+            <div class="col-md-4" v-for="(movie, idx) in already" :key="idx">
+              <div class="card">
+                <img :src="movie.poster_path" class="card-img-top" alt="">
+                  <div class="card-body">
+                    <p class="card-title">{{ movie.title }}</p>
+                    <span v-for="(genre, idx) in movie.genre_ids" :key="idx">
+                      <span class="text-muted" >{{ genre.name }} </span>
+                    </span>
+                  </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+
 export default {
   name: 'Already',
+  components: {
+  },
+  data: function () {
+    return {
+      already: this.$store.state.alreadyList,
+    }
+  },
+  methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      
+      const config = {
+        headers: {
+          Authorization: `JWT ${token}`
+        }
+      }
+      return config
+    },
+  },
 }
 </script>
 
@@ -34,5 +70,9 @@ export default {
 .innerLink {
   color: #fff;
   font-size: 1rem;
+}
+.card-title {
+  color: black;
+  font-size: 1.2rem;
 }
 </style>

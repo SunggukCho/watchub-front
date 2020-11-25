@@ -3,17 +3,17 @@
     <h1>signup</h1>
     <div>
       <label for="username">사용자이름: </label>
-      <input type="text" id="username" 
+      <input type="text" required id="username" minlength="3" maxlength="10" placeholder="username"
       v-model="credentials.username">
     </div>
     <div>
       <label for="password">비밀번호: </label>
-      <input type="text" id="password" 
+      <input type="password" required id="password" minlength="8" maxlength="16" placeholder="password"
       v-model="credentials.password">
     </div>
     <div>
       <label for="passwordConfirmation">비밀번호 확인: </label>
-      <input type="text" id="passwordConfirmation" 
+      <input type="password" required id="passwordConfirmation" minlength="8" maxlength="16" placeholder="password"
       v-model="credentials.passwordConfirmation"
       @keypress.enter="signup">
     </div>

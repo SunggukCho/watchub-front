@@ -12,6 +12,7 @@ export default new Vuex.Store({
     wishList: [],
     alreadyList: [],
     favoriteList: [],
+    userId: 0,
   },
   mutations: {
     SET_LATEST_MOVIE_LIST: function (state, movies) {
@@ -26,6 +27,23 @@ export default new Vuex.Store({
     SET_WISH_LIST: function (state, wish) {
       state.wishList.push(wish)
     },
+    SET_WATCHED_MOVIE_LIST: function (state, movie) {
+      state.alreadyList.push(movie)
+    },
+    RESET_WATCHED_MOVIE_LIST: function (state, movie) {
+      const index = state.alreadyList.indexOf(movie)
+      state.alreadyList.splice(index, movie)
+    },
+    SET_USER_ID: function (state, userId) {
+      state.userId = userId
+    },
+    SET_LIKE_MOVIE_LIST: function (state, movie) {
+      state.favoriteList.push(movie)
+    },
+    RESET_LIKE_MOVIE_LIST: function (state, movie) {
+      const index = state.favoriteList.indexOf(movie)
+      state.favoriteList.splice(index, movie)
+    },
   },
   actions: {
     getLatestMovieList: function({commit}, movies) {
@@ -39,6 +57,18 @@ export default new Vuex.Store({
     },
     getWishList: function({commit}, wish) {
       commit('SET_WISH_LIST', wish)
+    },
+    getWatchedmovie: function ({commit}, movie) {
+      commit('SET_WATCHED_MOVIE_LIST', movie)
+    },
+    removeWatchedmovie: function ({commit}, movie) {
+      commit('RESET_WATCHED_MOVIE_LIST', movie)
+    },
+    getLikeMovie: function ({commit}, movie) {
+      commit('SET_LIKE_MOVIE_LIST', movie)
+    },
+    removeLikeMovie: function ({commit}, movie) {
+      commit('RESET_LIKE_MOVIE_LIST', movie)
     },
   },
   modules: {

@@ -1,18 +1,18 @@
 <template>
   <div>
     <h1>Login</h1>
-    <div>
-      <label for="username">사용자이름: </label>
-      <input type="text" id="username" 
-      v-model="credentials.username">
-    </div>
-    <div>
-      <label for="password">비밀번호: </label>
-      <input type="text" id="password" 
-      v-model="credentials.password"
-      @keypress.enter="login">
-    </div>
-    <button @click="login">로그인</button>
+      <div>
+        <label for="username">사용자이름: </label>
+        <input type="text" required id="username" placeholder="username"
+        v-model="credentials.username">
+      </div>
+      <div>
+        <label for="password">비밀번호: </label>
+        <input type="password" required id="password" placeholder="password"
+        v-model="credentials.password"
+        @keypress.enter="login">
+      </div>
+      <button @click="login">로그인</button>
   </div>
 </template>
 
@@ -40,7 +40,7 @@ export default {
         localStorage.setItem('jwt', res.data.token)
         // localStorage.setItem('user_id', res.data.)
         this.$emit('login')
-        this.$router.push({name: 'TodoList'})
+        this.$router.push({name: 'Recommend'})
       })
       .catch((err) => {
         console.log(err)
@@ -49,6 +49,7 @@ export default {
       .then((res) => {
         const userId = res.data.userId
         localStorage.setItem('user_id', userId)
+        this.$store.commit('SET_USER_ID', userId)
       })
       .catch((err) => {
         console.log(err)

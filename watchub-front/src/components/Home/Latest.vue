@@ -32,12 +32,18 @@
             </div>
           </div>
           <div class="box mx-4">
-            <!-- 좋아요 -->
+            <!-- 좋아요 아이콘 -->
             <button class="btn btn-link" @click="postLike(movieDetail)">
               <i class="fas fa-heart fa-lg" style="color:crimson;" v-if="liked === true"></i>
               <i class="fas fa-heart fa-lg" style="color:#fff;" v-else></i>
             </button>
+            <!-- 본 영화 아이콘 -->
+            <button class="btn btn-link" @click="postWatched(movieDetail)">
+              <i class="fas fa-check-square fa-lg" style="color:crimson;" v-if="watched === true"></i>
+              <i class="far fa-check-square fa-lg" style="color:#fff;" v-else></i>
+            </button>
             <p>좋아요 수: {{ this.numberOfLikes }} </p>
+            <p>영화 본 사람 수: {{ this.numberOfWatched }} </p>
             <!-- 평점 -->
             <p>리뷰를 입력해주세요 (1~10)
               <input type="number" v-model="review" min="1" max="10" @keypress.enter="sendReview(review, movieDetail)">
@@ -48,7 +54,7 @@
             <!-- 영화 정보 -->
             <p>평균 평점: {{ movieDetail.vote_average }}</p>
             <p>개봉: {{ movieDetail.release_date }}</p>
-            <p>장르:<span v-for="(genre, idx) in movieDetail.genre_ids" :key="idx">  {{ genre.name }}</span></p>
+            <p>장르:<span v-for="(genre, idx) in movieDetail.genre_ids" :key="idx"> {{ genre.name }}</span></p>
             <span>줄거리:</span>
             <p> {{ movieDetail.overview }}</p>
             <hr>
@@ -57,11 +63,14 @@
             <input type="text" v-model="comment" @keypress.enter="createComment(comment, movieDetail)">
             <button @click="createComment(comment, movieDetail)">ADD</button>
               <p v-for="(comment, idx) in comments" :key="idx"> 
-                {{ comment.content }} |
-                {{ comment.user_id }} |
-                작성:{{ comment.created_at.substr(5, 5) }} |
-                수정:{{ comment.updated_at.substr(5, 5) }} |
-                <button @click="deleteComment(comment, movieDetail)">삭제</button>
+                <span>
+                  {{ comment.content }} |
+                  {{ comment.user_id }} |
+                  작성:{{ comment.created_at.substr(5, 5) }} |
+                  수정:{{ comment.updated_at.substr(5, 5) }} |
+                </span>
+                <!-- <button v-if="userId == comment.user_id" @click="updateComment(comment, idx)">수정</button> -->
+                <button v-if="userId == comment.user_id" @click="deleteComment(comment, movieDetail)">삭제</button>
               </p>
           </div>
           <div class="modal-footer">
@@ -70,6 +79,7 @@
         </div>
       </div>
     </div>
+
   </section>
 </template>
 
@@ -78,6 +88,7 @@ import { Glide, GlideSlide } from 'vue-glide-js'
 import axios from 'axios'
 
 const API_URL = process.env.VUE_APP_SERVER_URL
+const userId = localStorage.getItem('user_id')**1
 
 export default {
   name: 'Latest',
@@ -92,12 +103,18 @@ export default {
     return {
       movieDetail: {},
       numberOfLikes: 0,
-      likes: [],
+      liked: false,
+      inLikedList: false,
+      numberOfWatched: 0,
+      watched: false,
+      inWatchedList: false,
       review: 0,
       rank: 0,
       comment: '',
       comments: [],
-      liked: false,
+      commentUpdate: '',
+      userId: this.$store.state.userId,
+      revise: false,
     }
   },
   methods: {
@@ -116,6 +133,7 @@ export default {
       this.getLike(movie)
       this.getReview(movie)
       this.getComment(movie)
+      this.getWatchedMovie(movie)
     },
     getLike: function (movie) {
       const config = this.setToken()
@@ -123,7 +141,6 @@ export default {
 
       axios.get(`${API_URL}/movies/${movieId}/like/`, config)
       .then((res) => {
-        const userId = localStorage.getItem('user_id')**1
         this.numberOfLikes = res.data.like_users.length
         if (res.data.like_users.includes(userId)) {
           this.liked = true
@@ -140,13 +157,64 @@ export default {
       const movieId = movie.id
       axios.post(`${API_URL}/movies/${movieId}/like/`, {}, config)
       .then((res) => {
-        const userId = localStorage.getItem('user_id')**1
-        this.likes = res.data.like_users
         this.numberOfLikes = res.data.like_users.length
         if (res.data.like_users.includes(userId)) {
           this.liked = true
+          // vuex store로 저장
+          if (this.inLikedList === false) {
+            this.$store.dispatch('getLikeMovie', movie)
+          } 
+          this.inLikedList = true
         } else {
           this.liked = false
+          // vuex store에서 삭제
+          if (this.inLikedList === true) {
+            this.$store.dispatch('removeLikeMovie', movie)
+            } 
+          this.inLikedList = false
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+    getWatchedMovie: function (movie) {
+      const config = this.setToken()
+      const movieId = movie.id
+      axios.get(`${API_URL}/movies/${movieId}/watched/`, config)
+      .then((res) => {
+        this.numberOfWatched = res.data.watch_users.length
+        if (res.data.watch_users.includes(userId)) {
+          this.watched = true
+        } else {
+          this.watched = false
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+    postWatched: function (movie) {
+      const config = this.setToken()
+      const movieId = movie.id
+      
+      axios.post(`${API_URL}/movies/${movieId}/watched/`, {}, config)
+      .then((res) => {
+        this.numberOfWatched = res.data.watch_users.length  
+        if (res.data.watch_users.includes(userId)) {
+          this.watched = true
+          // vuex store로 저장
+          if (this.inWatchedList === false) {
+            this.$store.dispatch('getWatchedmovie', movie)
+          } 
+          this.inWatchedList = true
+        } else {
+          this.watched = false
+          // vuex store에서 삭제
+          if (this.inWatchedList === true) {
+            this.$store.dispatch('getWatchedmovie', movie)
+          } 
+          this.inWatchedList = false
         }
       })
       .catch((err) => {
@@ -210,15 +278,33 @@ export default {
       const config = this.setToken()
       const movieId = movie.id
       const commentId = comment.id
-      console.log(movieId, commentId)
-      axios.post(`${API_URL}/movies/${movieId}/comments/${commentId}`, {}, config)
-      .then((res) => {
-        console.log(res)
+
+      axios.delete(`${API_URL}/movies/${movieId}/comments/${commentId}/delete/`, config)
+      .then(() => {
+        this.getComment(movie)
       })
       .catch((err) => {
         console.log(err)
       })
-    }
+    },
+    // updateComment: function () {
+    //   this.revise = true
+    // },
+    // updateCommentAction: function (comment, commentUpdate, movie) {
+    //   const config = this.setToken()
+    //   const movieId = movie.id
+    //   const commentId = comment.id
+    //   const commentContent = comment.content
+
+    //   axios.put(`${API_URL}/movies/${movieId}/comments/${commentId}/update/`, {'content': commentUpdate}, config)
+    //   .then(() => {
+    //     this.commentUpdate = ''
+    //     this.getComment(movie)
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //   })
+    // }
   }
 }
 

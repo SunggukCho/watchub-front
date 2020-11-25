@@ -1,7 +1,8 @@
 <template>
   <div id="app" class="container-fluid">
     <div id="nav">
-      <a href="/"><img alt="Watchub logo" src="./assets/logo_watchub.png" class="main_logo"></a>
+      <a v-if="login === true" href="/"><img alt="Watchub logo" src="./assets/logo_watchub.png" class="main_logo"></a>
+      <a v-else><img alt="Watchub logo" src="./assets/logo_watchub.png" class="main_logo"></a>
       <span v-if="login">
         <router-link to="/">Home</router-link> |
         <router-link to="/recommend">추천영화</router-link> |

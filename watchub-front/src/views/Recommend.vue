@@ -1,70 +1,57 @@
 <template>
-  <div id="recommend">
-    <h2>오늘의 추천작!</h2>
-    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-      <ol class="carousel-indicators">
-        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-        <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-      </ol>
-      <div class="carousel-inner">
-        <div class="carousel-item active">
-          <img class="d-block w-100" src="https://image.tmdb.org/t/p/original/cj9UsJEN5bNf6ZoF1BbKjKN81hc.jpg" alt="First slide">
-        </div>
-        <div class="carousel-item">
-          <img class="d-block w-100" src="https://image.tmdb.org/t/p/original/qzCMXEwiH5ym4wBl9EwS8QtCzlN.jpg" alt="Second slide">
-        </div>
-      </div>
-      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-      </a>
-      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-      </a>
+  <div id="recommend" class="container">
+    <div class="row justify-content-center">
+      <h2>오늘의 추천작!</h2>
+      <button @click="getRecommendList()">영화추천받기</button>
+      <RecommendCarousel :recommendMovieList="recommendList" />
     </div>
-    
   </div>
 </template>
 
 <script>
+import RecommendCarousel from './RecommendCarousel.vue'
+import axios from 'axios'
+
+const API_URL = process.env.VUE_APP_SERVER_URL
+// const userId = localStorage.getItem('user_id')**1
+
 export default {
   name: 'Recommend',
+  components: {
+    RecommendCarousel,
+  },
+  data: function () {
+    return {
+      recommendList: [],
+      tmp: this.$store.state.favoriteList[0],
+    }
+  },
+  methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+      const config = {
+        headers: {
+          Authorization: `JWT ${token}`
+        }
+      }
+      return config
+    },
+    getRecommendList: function () {
+      const config = this.setToken()
+      const movieId = this.tmp.id
+
+      axios.get(`${API_URL}/movies/${movieId}/recommend_like/`, config)
+      .then((res) => {
+        this.recommendList = res.data
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+  }
 }
 
 </script>
 
 <style>
-#recommend {
-  text-align:center;
-}
-.carousel {
-  width: 40%;
-  margin: 0 auto;
-}
-@media (max-width: 576px) {
-  .carousel {
-    width: 90%;
-    margin: 0 auto;
-  }
-}
-@media (max-width: 768px) {
-  .carousel {
-    width: 70%;
-    margin: 0 auto;
-  }
-}
-@media (max-width: 992px) {
-  .carousel {
-    width: 70%;
-    margin: 0 auto;
-  }
-}
-@media (max-width: 1200px) {
-  .carousel {
-    width: 60%;
-    margin: 0 auto;
-  }
-}
 </style>

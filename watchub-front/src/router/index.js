@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Recommend from '../views/Recommend.vue'
 import MyMovie from '../views/MyMovie.vue'
+import RecommendCarousel from '../views/RecommendCarousel.vue'
 import Signup from '@/views/accounts/Signup'
 import Login from '@/views/accounts/Login'
 import WishList from '@/components/MyMovie/Wishlist'
@@ -24,6 +25,11 @@ const routes = [
     path: '/recommend',
     name: 'Recommend',
     component: Recommend
+  },
+  {
+    path: '/recommendcarousel',
+    name: 'RecommendCarousel',
+    component: RecommendCarousel
   },
   {
     path: '/mymovie',

@@ -1,8 +1,8 @@
 <template>
   <div class="home">
-    <Latest />
-    <Popular />
-    <Classic />
+    <Latest  />
+    <Popular  />
+    <Classic  />
 
   </div>
 </template>
@@ -15,7 +15,6 @@ import Classic from '@/components/Home/Classic.vue'
 import axios from 'axios'
 
 const API_URL = process.env.VUE_APP_SERVER_URL
-
 
 export default {
   name: 'Home',
