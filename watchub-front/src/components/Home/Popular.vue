@@ -45,9 +45,10 @@
             <p>좋아요 수: {{ this.numberOfLikes }} </p>
             <p>영화 본 사람 수: {{ this.numberOfWatched }} </p>
             <!-- 평점 -->
-            <p>리뷰를 입력해주세요 (1~10)
-              <input type="number" v-model="review" min="1" max="10" @keypress.enter="sendReview(review, movieDetail)">
-              <button @click="sendReview(review, movieDetail)">ADD</button>
+            <p>  
+              <star-rating v-model="review" 
+              current-rating animate="true" inline="true" star-size="25"
+              @rating-selected="sendReview(review, movieDetail)"/>
             </p>
             <p>내 평점: {{ this.rank }}</p>
             <!-- <p v-else> {{ myRank }} </p> -->
@@ -82,6 +83,7 @@
 <script>
 import { Glide, GlideSlide } from 'vue-glide-js'
 import axios from 'axios'
+import StarRating from 'vue-star-rating'
 
 const API_URL = process.env.VUE_APP_SERVER_URL
 const userId = localStorage.getItem('user_id')**1
@@ -91,6 +93,7 @@ export default {
   components: {
     [Glide.name]: Glide,
     [GlideSlide.name]: GlideSlide,
+    StarRating
   },
   props: {
     Popular: Array,

@@ -10,15 +10,13 @@
           <span v-for="(genre, idx) in movie.genre_ids" :key="idx">
             <span class="text-muted" >{{ genre.name }} </span>
           </span>
-          <p class="text-muted" >WATCHUB! 좋아요: {{ movie.likes }} </p>
-          <p class="text-muted" >WATCHUB! 본 사람: {{ movie.watched }} </p>
-          <p class="text-muted" >WATCHUB! 평점: {{ movie.rank }} </p>
+          <p class="text-muted" >WATCHUB! 좋아요: {{ movie.like_users.length }} </p>
+          <p class="text-muted" >WATCHUB! 본 사람: {{ movie.watch_users.length }} </p>
           <span class="text-muted" >{{ movie.overview }} </span>
         </div>
       </div>
     </div>
-</div>
-
+  </div>
 </template>
 
 <script>

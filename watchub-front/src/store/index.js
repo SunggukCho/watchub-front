@@ -13,6 +13,7 @@ export default new Vuex.Store({
     alreadyList: [],
     favoriteList: [],
     userId: 0,
+    flag: true,
   },
   mutations: {
     SET_LATEST_MOVIE_LIST: function (state, movies) {

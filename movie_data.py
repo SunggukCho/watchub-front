@@ -23,7 +23,7 @@ for i in range(1, 20):
             "fields": {
                 'title' : arr[i]['title'],
                 'poster_path': img_url+arr[i]['poster_path'],
-                'vote_average': arr[i]['vote_average'],
+                'vote_average': round(arr[i]['vote_average']/2, 1),
                 'release_date': arr[i]['release_date'],
                 'overview': arr[i]['overview'],
                 'genres': arr[i]['genre_ids']

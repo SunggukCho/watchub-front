@@ -45,12 +45,12 @@
             <p>좋아요 수: {{ this.numberOfLikes }} </p>
             <p>영화 본 사람 수: {{ this.numberOfWatched }} </p>
             <!-- 평점 -->
-            <p>리뷰를 입력해주세요 (1~10)
-              <input type="number" v-model="review" min="1" max="10" @keypress.enter="sendReview(review, movieDetail)">
-              <button @click="sendReview(review, movieDetail)">ADD</button>
+            <p>  
+              <star-rating v-model="review" 
+              current-rating animate="true" inline="true" star-size="25"
+              @rating-selected="sendReview(review, movieDetail)"/>
             </p>
             <p>내 평점: {{ this.rank }}</p>
-            <!-- <p v-else> {{ myRank }} </p> -->
             <!-- 영화 정보 -->
             <p>평균 평점: {{ movieDetail.vote_average }}</p>
             <p>개봉: {{ movieDetail.release_date }}</p>
@@ -86,6 +86,7 @@
 <script>
 import { Glide, GlideSlide } from 'vue-glide-js'
 import axios from 'axios'
+import StarRating from 'vue-star-rating'
 
 const API_URL = process.env.VUE_APP_SERVER_URL
 const userId = localStorage.getItem('user_id')**1
@@ -95,6 +96,7 @@ export default {
   components: {
     [Glide.name]: Glide,
     [GlideSlide.name]: GlideSlide,
+    StarRating
   },
   props: {
     Latest: Array,
@@ -104,7 +106,7 @@ export default {
       movieDetail: {},
       numberOfLikes: 0,
       liked: false,
-      inLikedList: false,
+      // inLikedList: false,
       numberOfWatched: 0,
       watched: false,
       inWatchedList: false,
@@ -134,7 +136,19 @@ export default {
       this.getReview(movie)
       this.getComment(movie)
       this.getWatchedMovie(movie)
+      this.getUserLike()
     },
+    getUserLike: function () {
+      const config = this.setToken()
+      axios.get(`${API_URL}/accounts/${userId}/like/`, config)
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
+    ,
     getLike: function (movie) {
       const config = this.setToken()
       const movieId = movie.id
@@ -159,19 +173,17 @@ export default {
       .then((res) => {
         this.numberOfLikes = res.data.like_users.length
         if (res.data.like_users.includes(userId)) {
-          this.liked = true
           // vuex store로 저장
-          if (this.inLikedList === false) {
+          if (this.liked === false) {
             this.$store.dispatch('getLikeMovie', movie)
           } 
-          this.inLikedList = true
+          this.liked = true
         } else {
-          this.liked = false
           // vuex store에서 삭제
-          if (this.inLikedList === true) {
+          if (this.liked === true) {
             this.$store.dispatch('removeLikeMovie', movie)
-            } 
-          this.inLikedList = false
+          } 
+          this.liked = false
         }
       })
       .catch((err) => {
@@ -287,24 +299,6 @@ export default {
         console.log(err)
       })
     },
-    // updateComment: function () {
-    //   this.revise = true
-    // },
-    // updateCommentAction: function (comment, commentUpdate, movie) {
-    //   const config = this.setToken()
-    //   const movieId = movie.id
-    //   const commentId = comment.id
-    //   const commentContent = comment.content
-
-    //   axios.put(`${API_URL}/movies/${movieId}/comments/${commentId}/update/`, {'content': commentUpdate}, config)
-    //   .then(() => {
-    //     this.commentUpdate = ''
-    //     this.getComment(movie)
-    //   })
-    //   .catch((err) => {
-    //     console.log(err)
-    //   })
-    // }
   }
 }
 

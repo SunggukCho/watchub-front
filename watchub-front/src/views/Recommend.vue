@@ -1,9 +1,9 @@
 <template>
   <div id="recommend" class="container">
-    <div class="row justify-content-center">
+    <button class="btn btn-dark" @click="getRecommendList()">영화추천받기</button>
+      <div class="row justify-content-center">
       <h2>오늘의 추천작!</h2>
-      <button @click="getRecommendList()">영화추천받기</button>
-      <RecommendCarousel :recommendMovieList="recommendList" />
+        <RecommendCarousel :recommendMovieList="recommendList" />
     </div>
   </div>
 </template>
@@ -13,7 +13,7 @@ import RecommendCarousel from './RecommendCarousel.vue'
 import axios from 'axios'
 
 const API_URL = process.env.VUE_APP_SERVER_URL
-// const userId = localStorage.getItem('user_id')**1
+const userId = localStorage.getItem('user_id')**1
 
 export default {
   name: 'Recommend',
@@ -23,7 +23,6 @@ export default {
   data: function () {
     return {
       recommendList: [],
-      tmp: this.$store.state.favoriteList[0],
     }
   },
   methods: {
@@ -38,11 +37,11 @@ export default {
     },
     getRecommendList: function () {
       const config = this.setToken()
-      const movieId = this.tmp.id
 
-      axios.get(`${API_URL}/movies/${movieId}/recommend_like/`, config)
+      axios.get(`${API_URL}/movies/${userId}/recommend/`, config)
       .then((res) => {
         this.recommendList = res.data
+        console.log(res.data)
       })
       .catch((err) => {
         console.log(err)

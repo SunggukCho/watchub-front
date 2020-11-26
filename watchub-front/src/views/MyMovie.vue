@@ -11,11 +11,25 @@
 <script>
 // import Favorite from '@/components/MyMovie/Favorite.vue'
 
+
 export default {
   name: 'MyMovie',
   components: {
     // Favorite,
-  }
+  },
+  methods: {
+    setToken: function () {
+      const token = localStorage.getItem('jwt')
+
+      const config = {
+        headers: {
+          Authorization: `JWT ${token}`
+        }
+      }
+      return config
+    },
+  },
+
 }
 </script>
 
